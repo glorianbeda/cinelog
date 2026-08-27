@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureOwnerSetup::class,
         ]);
 
+        $middleware->redirectGuestsTo(function (Request $request) {
+            abort(404);
+        });
+
         $middleware->alias([
             'prevent.duplicate.setup' => PreventDuplicateSetup::class,
         ]);

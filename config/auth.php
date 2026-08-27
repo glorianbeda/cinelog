@@ -114,4 +114,16 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Secret Admin Login Path
+    |--------------------------------------------------------------------------
+    |
+    | Secret URL slug for accessing the owner login page. Prevents hackers &
+    | automated scanners from probing default routes like /login or /admin/login.
+    |
+    */
+
+    'admin_login_path' => env('ADMIN_LOGIN_PATH', 'vault-gate'),
+
 ];

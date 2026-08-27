@@ -34,10 +34,18 @@ Route::get('/setup-storage', function () {
     return 'Storage berhasil di-link!';
 });
 
-// Authentication
-Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/admin/login', [AuthController::class, 'login'])->name('login.post');
+// Secret Authentication Portal (Configurable via ADMIN_LOGIN_PATH in .env)
+$adminLoginPath = trim(config('auth.admin_login_path', 'vault-gate'), '/');
+
+Route::get('/'.$adminLoginPath, [AuthController::class, 'showLogin'])->name('login');
+Route::post('/'.$adminLoginPath, [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login.post');
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Honeypot / 404 traps for common hacker bot scanning patterns
+Route::any('/login', fn () => abort(404));
+Route::any('/admin/login', fn () => abort(404));
+Route::any('/wp-admin', fn () => abort(404));
+Route::any('/administrator', fn () => abort(404));
 
 // Admin Panel (Protected)
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {

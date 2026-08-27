@@ -70,18 +70,11 @@
                     </a>
 
                     @auth
-                        <!-- Admin Management Link -->
+                        <!-- Admin Management Link (Only visible when already authenticated) -->
                         <a href="{{ route('admin.dashboard') }}" 
                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-purple-500 hover:bg-purple-400 text-black border-2 border-black shadow-[2px_2px_0px_#fff] transition-all">
                             <x-lucide-shield-check class="w-4 h-4" />
                             <span>Panel Admin</span>
-                        </a>
-                    @else
-                        <!-- Hidden / Secret Login Shortcut -->
-                        <a href="{{ route('login') }}" 
-                           title="Masuk Pengelola"
-                           class="p-2 text-zinc-500 hover:text-zinc-300 rounded-lg transition-colors">
-                            <x-lucide-lock class="w-4 h-4" />
                         </a>
                     @endauth
                 </div>
