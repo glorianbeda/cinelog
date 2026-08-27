@@ -149,6 +149,7 @@ class DatabaseSeeder extends Seeder
                 'poster_url' => 'https://image.tmdb.org/t/p/w500/fqldf2t8ztc9aiwn397FvFeNz9H.jpg',
                 'backdrop_url' => 'https://image.tmdb.org/t/p/w1280/vI0FpG8c1bS3Yg9MtzjA7n7X0oO.jpg',
                 'director' => 'Christian Linke, Alex Yee',
+                'runtime_minutes' => 40,
                 'total_seasons' => 2,
                 'total_episodes' => 18,
                 'original_language' => 'EN',

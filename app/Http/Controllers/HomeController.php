@@ -40,7 +40,9 @@ class HomeController extends Controller
         $totalSeries = MovieSeries::whereIn('type', ['series', 'anime'])->whereHas('reviews', fn ($q) => $q->where('is_published', true))->count();
         $avgRating = Review::where('is_published', true)->avg('rating_overall') ?? 0;
 
-        $totalRuntimeMinutes = MovieSeries::whereHas('reviews', fn ($q) => $q->where('is_published', true))->sum('runtime_minutes') ?? 0;
+        $totalRuntimeMinutes = MovieSeries::whereHas('reviews', fn ($q) => $q->where('is_published', true))
+            ->get()
+            ->sum(fn ($m) => $m->total_runtime_minutes);
         $totalRuntimeHours = round($totalRuntimeMinutes / 60);
 
         $genres = Genre::withCount(['moviesSeries' => function ($q) {

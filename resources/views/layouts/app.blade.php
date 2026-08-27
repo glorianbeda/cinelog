@@ -52,7 +52,14 @@
                     </a>
                     <a href="{{ route('watchlist.public') }}" 
                        class="px-3.5 py-2 rounded-lg transition-all {{ request()->routeIs('watchlist.*') ? 'text-amber-400 bg-zinc-800/80 border border-amber-400/30' : 'text-zinc-300 hover:text-white hover:bg-zinc-800/50' }}">
-                        Watchlist
+                        <span>Watchlist</span>
+                        @auth
+                            @if(($pendingReviewsCount ?? 0) > 0)
+                                <span class="inline-flex items-center justify-center px-1.5 py-0.2 min-w-[18px] text-[10px] font-mono font-black bg-amber-400 text-black rounded-full shadow-[1px_1px_0px_#000] ml-1" title="{{ $pendingReviewsCount }} tontonan selesai siap diberi rating">
+                                    {{ $pendingReviewsCount }}
+                                </span>
+                            @endif
+                        @endauth
                     </a>
                     <a href="{{ route('stats.index') }}" 
                        class="px-3.5 py-2 rounded-lg transition-all {{ request()->routeIs('stats.*') ? 'text-amber-400 bg-zinc-800/80 border border-amber-400/30' : 'text-zinc-300 hover:text-white hover:bg-zinc-800/50' }}">

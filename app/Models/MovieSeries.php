@@ -103,6 +103,18 @@ class MovieSeries extends Model
         return 'https://image.tmdb.org/t/p/w1280'.$this->backdrop_url;
     }
 
+    public function getTotalRuntimeMinutesAttribute(): int
+    {
+        if ($this->type === 'movie') {
+            return (int) ($this->runtime_minutes ?? 0);
+        }
+
+        $epDuration = (int) ($this->runtime_minutes ?? 0);
+        $episodes = (int) ($this->total_episodes ?: 1);
+
+        return $epDuration * $episodes;
+    }
+
     public function getFormattedRuntimeAttribute(): string
     {
         if ($this->type === 'movie' && $this->runtime_minutes) {
@@ -120,8 +132,11 @@ class MovieSeries extends Model
             if ($this->total_episodes) {
                 $parts[] = "{$this->total_episodes} Eps";
             }
+            if ($this->runtime_minutes) {
+                $parts[] = "±{$this->runtime_minutes}m/ep";
+            }
 
-            return implode(' • ', $parts);
+            return !empty($parts) ? implode(' • ', $parts) : '-';
         }
 
         return '-';

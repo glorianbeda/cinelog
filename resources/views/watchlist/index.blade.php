@@ -94,14 +94,30 @@
                         </div>
 
                         <!-- Progress or Notes -->
-                        <div class="pt-2 border-t border-slate-800 space-y-1">
-                            @if($movie->type !== 'movie' && $item->status === 'watching')
-                                <div class="flex items-center gap-1.5 text-emerald-400 font-bold text-xs">
-                                    <x-lucide-play class="w-3.5 h-3.5" />
-                                    <span>Season {{ $item->current_season }} Ep {{ $item->current_episode }}</span>
-                                    @if($movie->total_episodes)
-                                        <span class="text-zinc-500 font-normal">/ {{ $movie->total_episodes }}</span>
-                                    @endif
+                        <div class="pt-2 border-t border-slate-800 space-y-2">
+                            @if($movie->type !== 'movie')
+                                <div class="space-y-1">
+                                    <div class="flex items-center justify-between text-[11px]">
+                                        <div class="flex items-center gap-1.5 {{ $item->is_finished ? 'text-purple-300' : 'text-emerald-400' }} font-bold">
+                                            @if($item->is_finished)
+                                                <x-lucide-check-circle-2 class="w-3.5 h-3.5 text-emerald-400" />
+                                                <span>Selesai ({{ $item->current_episode }} eps)</span>
+                                            @else
+                                                <x-lucide-play class="w-3.5 h-3.5 text-emerald-400" />
+                                                <span>S{{ $item->current_season }} Ep {{ $item->current_episode }}</span>
+                                                @if($movie->total_episodes)
+                                                    <span class="text-zinc-500 font-normal">/ {{ $movie->total_episodes }}</span>
+                                                @endif
+                                            @endif
+                                        </div>
+                                        <span class="text-[10px] font-mono text-zinc-400">{{ $item->progress_percentage }}%</span>
+                                    </div>
+                                    <!-- Progress Bar -->
+                                    <div class="w-full bg-zinc-800 rounded-full h-1.5 border border-slate-700 overflow-hidden">
+                                        <div class="h-full rounded-full {{ $item->is_finished ? 'bg-gradient-to-r from-purple-400 to-emerald-400' : 'bg-gradient-to-r from-cyan-400 to-emerald-400' }}" 
+                                             style="width: {{ $item->progress_percentage }}%">
+                                        </div>
+                                    </div>
                                 </div>
                             @endif
 
@@ -112,9 +128,10 @@
                             @endif
 
                             @if($movie->reviews->isNotEmpty())
-                                <a href="{{ route('reviews.show', $movie->slug) }}" class="inline-flex items-center gap-1 text-[11px] text-amber-400 hover:underline font-bold mt-1">
-                                    <x-lucide-star class="w-3 h-3 fill-amber-400" />
-                                    <span>Lihat Ulasan</span>
+                                @php $review = $movie->reviews->first(); @endphp
+                                <a href="{{ route('reviews.show', $movie->slug) }}" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 border border-amber-400/30 rounded-lg text-[11px] font-bold mt-1 transition-colors">
+                                    <x-lucide-star class="w-3 h-3 fill-amber-400 text-amber-400" />
+                                    <span>Rating: {{ number_format($review->rating_overall, 1) }} ★ (Lihat Ulasan)</span>
                                 </a>
                             @endif
                         </div>

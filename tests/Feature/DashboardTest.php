@@ -6,6 +6,7 @@ use App\Models\Genre;
 use App\Models\MovieSeries;
 use App\Models\Review;
 use App\Models\User;
+use App\Models\Watchlist;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -177,5 +178,88 @@ class DashboardTest extends TestCase
         $response->assertDontSee('/vault-gate');
         $response->assertDontSee('Masuk Pengelola');
         $response->assertDontSee('Panel Admin');
+    }
+
+    public function test_series_watch_time_calculates_episodes_multiplied_by_runtime_minutes(): void
+    {
+        $user = User::create([
+            'name' => 'Owner Test',
+            'username' => 'ownertest',
+            'email' => 'owner@cinelog.test',
+            'password' => bcrypt('secretpassword123'),
+            'is_setup_completed' => true,
+        ]);
+
+        $series = MovieSeries::create([
+            'title' => 'Arcane',
+            'type' => 'series',
+            'slug' => 'arcane',
+            'runtime_minutes' => 45,
+            'total_episodes' => 10,
+        ]);
+
+        Review::create([
+            'user_id' => $user->id,
+            'movie_series_id' => $series->id,
+            'rating_overall' => 9.5,
+            'headline' => 'Fantastic series',
+            'is_published' => true,
+        ]);
+
+        // 45 mins * 10 eps = 450 mins = 8 hours (rounded from 7.5 hours)
+        $this->assertEquals(450, $series->total_runtime_minutes);
+
+        $response = $this->get('/');
+        $response->assertStatus(200);
+        // Assert 8 Jam is displayed in the stats
+        $response->assertSee('8 <span class="text-sm text-zinc-400">Jam</span>', false);
+    }
+
+    public function test_watchlist_progress_and_completion_triggers_needs_review_badge(): void
+    {
+        $user = User::create([
+            'name' => 'Owner Test',
+            'username' => 'ownertest',
+            'email' => 'owner@cinelog.test',
+            'password' => bcrypt('secretpassword123'),
+            'is_setup_completed' => true,
+        ]);
+
+        $series = MovieSeries::create([
+            'title' => 'Shogun',
+            'type' => 'series',
+            'slug' => 'shogun',
+            'runtime_minutes' => 60,
+            'total_episodes' => 10,
+        ]);
+
+        $watchlist = Watchlist::create([
+            'user_id' => $user->id,
+            'movie_series_id' => $series->id,
+            'status' => 'watching',
+            'current_season' => 1,
+            'current_episode' => 5,
+        ]);
+
+        // 5 / 10 = 50%
+        $this->assertEquals(50, $watchlist->progress_percentage);
+        $this->assertFalse($watchlist->is_finished);
+        $this->assertFalse($watchlist->needs_review);
+
+        // Advance to 10th episode via progress route
+        $response = $this->actingAs($user)->post(route('admin.watchlist.progress', $watchlist), [
+            'direction' => 'up',
+        ]);
+
+        // After updating to completed status
+        $watchlist->update(['current_episode' => 10, 'status' => 'completed']);
+        $this->assertEquals(100, $watchlist->progress_percentage);
+        $this->assertTrue($watchlist->is_finished);
+        $this->assertTrue($watchlist->needs_review);
+
+        // Admin layout renders badge with count 1
+        $adminResponse = $this->actingAs($user)->get(route('admin.dashboard'));
+        $adminResponse->assertStatus(200);
+        $adminResponse->assertSee('Ada 1 Tontonan Selesai Siap Diberi Rating!');
     }
 }

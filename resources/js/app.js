@@ -344,7 +344,13 @@ Alpine.data('tmdbSearcher', () => ({
                 if (document.getElementById('input_original_title')) {
                     document.getElementById('input_original_title').value = details.original_title || '';
                 }
-                document.getElementById('input_type').value = details.type || 'movie';
+                const typeEl = document.getElementById('input_type');
+                if (typeEl) {
+                    typeEl.value = details.type || 'movie';
+                    typeEl.dispatchEvent(new Event('input', { bubbles: true }));
+                    typeEl.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+
                 document.getElementById('input_tmdb_id').value = details.tmdb_id || '';
                 document.getElementById('input_release_year').value = details.release_year || '';
                 if (document.getElementById('input_release_date')) {
@@ -357,14 +363,20 @@ Alpine.data('tmdbSearcher', () => ({
                 if (document.getElementById('input_director')) {
                     document.getElementById('input_director').value = details.director || '';
                 }
-                if (document.getElementById('input_runtime_minutes')) {
-                    document.getElementById('input_runtime_minutes').value = details.runtime_minutes || '';
+                const runtimeEl = document.getElementById('input_runtime_minutes');
+                if (runtimeEl) {
+                    runtimeEl.value = details.runtime_minutes || '';
+                    runtimeEl.dispatchEvent(new Event('input', { bubbles: true }));
                 }
-                if (document.getElementById('input_total_seasons')) {
-                    document.getElementById('input_total_seasons').value = details.total_seasons || '';
+                const seasonsEl = document.getElementById('input_total_seasons');
+                if (seasonsEl) {
+                    seasonsEl.value = details.total_seasons || '';
+                    seasonsEl.dispatchEvent(new Event('input', { bubbles: true }));
                 }
-                if (document.getElementById('input_total_episodes')) {
-                    document.getElementById('input_total_episodes').value = details.total_episodes || '';
+                const episodesEl = document.getElementById('input_total_episodes');
+                if (episodesEl) {
+                    episodesEl.value = details.total_episodes || '';
+                    episodesEl.dispatchEvent(new Event('input', { bubbles: true }));
                 }
                 if (document.getElementById('input_cast_members')) {
                     document.getElementById('input_cast_members').value = JSON.stringify(details.cast_members || []);

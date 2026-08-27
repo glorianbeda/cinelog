@@ -171,59 +171,131 @@
                                    class="w-full neo-input px-3.5 py-2 rounded-lg text-sm font-sans font-bold">
                         </div>
 
-                        <div>
-                            <label for="input_type" class="block font-bold text-zinc-200 mb-1">
-                                Format Tontonan <span class="text-rose-500">*</span>
-                            </label>
-                            <select id="input_type" name="type" required class="w-full neo-input px-3 py-2 rounded-lg text-xs">
-                                <option value="movie">Film (Movie)</option>
-                                <option value="series">Serial (Series)</option>
-                                <option value="anime">Anime</option>
-                            </select>
-                        </div>
-                    </div>
+                    <!-- Type, Year, Director, Duration & Series Details -->
+                    <div x-data="{
+                        type: '{{ old('type', 'movie') }}',
+                        runtime: '{{ old('runtime_minutes', '') }}',
+                        seasons: '{{ old('total_seasons', '') }}',
+                        episodes: '{{ old('total_episodes', '') }}',
+                        get isSeries() {
+                            return this.type === 'series' || this.type === 'anime';
+                        },
+                        get totalEstimatedMinutes() {
+                            const r = parseInt(this.runtime) || 0;
+                            if (!this.isSeries) return r;
+                            const eps = parseInt(this.episodes) || 1;
+                            return r * eps;
+                        },
+                        get formattedCalculation() {
+                            const total = this.totalEstimatedMinutes;
+                            if (!total) return '';
+                            const h = Math.floor(total / 60);
+                            const m = total % 60;
+                            if (!this.isSeries) {
+                                return h > 0 ? `${h} jam ${m > 0 ? m + ' menit' : ''}` : `${m} menit`;
+                            }
+                            const eps = parseInt(this.episodes) || 1;
+                            const r = parseInt(this.runtime) || 0;
+                            return `Total: ${total} menit (${h > 0 ? h + ' jam ' : ''}${m > 0 ? m + ' mnt' : ''}) [${eps} eps × ${r} mnt]`;
+                        }
+                    }" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label for="input_type" class="block font-bold text-zinc-200 mb-1">
+                                    Format Tontonan <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="input_type" 
+                                        name="type" 
+                                        x-model="type" 
+                                        required 
+                                        class="w-full neo-input px-3 py-2 rounded-lg text-xs">
+                                    <option value="movie" {{ old('type') === 'movie' ? 'selected' : '' }}>Film (Movie)</option>
+                                    <option value="series" {{ old('type') === 'series' ? 'selected' : '' }}>Serial (Series)</option>
+                                    <option value="anime" {{ old('type') === 'anime' ? 'selected' : '' }}>Anime</option>
+                                </select>
+                            </div>
 
-                    <!-- Year, Director, Runtime -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                            <label for="input_release_year" class="block font-bold text-zinc-200 mb-1">
-                                Tahun Rilis
-                            </label>
-                            <input type="number" 
-                                   id="input_release_year" 
-                                   name="release_year" 
-                                   value="{{ old('release_year') }}" 
-                                   class="w-full neo-input px-3 py-2 rounded-lg text-xs">
+                            <div>
+                                <label for="input_release_year" class="block font-bold text-zinc-200 mb-1">
+                                    Tahun Rilis
+                                </label>
+                                <input type="number" 
+                                       id="input_release_year" 
+                                       name="release_year" 
+                                       value="{{ old('release_year') }}" 
+                                       class="w-full neo-input px-3 py-2 rounded-lg text-xs">
+                            </div>
+
+                            <div>
+                                <label for="input_director" class="block font-bold text-zinc-200 mb-1">
+                                    Sutradara / Kreator
+                                </label>
+                                <input type="text" 
+                                       id="input_director" 
+                                       name="director" 
+                                       value="{{ old('director') }}" 
+                                       class="w-full neo-input px-3 py-2 rounded-lg text-xs">
+                            </div>
                         </div>
 
-                        <div>
-                            <label for="input_director" class="block font-bold text-zinc-200 mb-1">
-                                Sutradara / Kreator
-                            </label>
-                            <input type="text" 
-                                   id="input_director" 
-                                   name="director" 
-                                   value="{{ old('director') }}" 
-                                   class="w-full neo-input px-3 py-2 rounded-lg text-xs">
-                        </div>
+                        <!-- Duration / Seasons / Episodes -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-3.5 bg-zinc-900/60 border border-slate-800 rounded-xl">
+                            <div>
+                                <label for="input_runtime_minutes" class="block font-bold text-zinc-200 mb-1 flex items-center justify-between">
+                                    <span x-text="isSeries ? '⏱️ Menit / Episode' : '⏱️ Durasi Menit Total'"></span>
+                                </label>
+                                <input type="number" 
+                                       id="input_runtime_minutes" 
+                                       name="runtime_minutes" 
+                                       x-model="runtime"
+                                       :placeholder="isSeries ? 'Contoh: 45 (atau 24)' : 'Contoh: 148'"
+                                       class="w-full neo-input px-3 py-2 rounded-lg text-xs">
+                                <span class="text-[10px] text-zinc-400 mt-1 block" 
+                                      x-text="isSeries ? 'Perkiraan durasi 1 episode (menit)' : 'Durasi total film dalam menit'"></span>
+                            </div>
 
-                        <div>
-                            <label for="input_runtime_minutes" class="block font-bold text-zinc-400 mb-1">
-                                Durasi Menit
-                            </label>
-                            <input type="number" 
-                                   id="input_runtime_minutes" 
-                                   name="runtime_minutes" 
-                                   value="{{ old('runtime_minutes') }}" 
-                                   class="w-full neo-input px-3 py-2 rounded-lg text-xs">
+                            <div>
+                                <label for="input_total_seasons" class="block font-bold text-zinc-400 mb-1">
+                                    Total Season
+                                </label>
+                                <input type="number" 
+                                       id="input_total_seasons" 
+                                       name="total_seasons" 
+                                       x-model="seasons"
+                                       placeholder="Contoh: 3"
+                                       class="w-full neo-input px-3 py-2 rounded-lg text-xs">
+                                <span class="text-[10px] text-zinc-400 mt-1 block" x-show="isSeries">Jumlah season tontonan</span>
+                            </div>
+
+                            <div>
+                                <label for="input_total_episodes" class="block font-bold text-zinc-200 mb-1">
+                                    Total Episode <span x-show="isSeries" class="text-amber-400 font-normal text-[10px]">(ke jam)</span>
+                                </label>
+                                <input type="number" 
+                                       id="input_total_episodes" 
+                                       name="total_episodes" 
+                                       x-model="episodes"
+                                       placeholder="Contoh: 24"
+                                       class="w-full neo-input px-3 py-2 rounded-lg text-xs">
+                                <span class="text-[10px] text-zinc-400 mt-1 block" x-show="isSeries">Total episode yang ditonton</span>
+                            </div>
+
+                            <!-- Live Calculation Helper -->
+                            <div class="sm:col-span-3 pt-2 border-t border-slate-800 flex items-center justify-between" x-show="formattedCalculation">
+                                <span class="text-[11px] font-mono text-zinc-400 flex items-center gap-1.5">
+                                    <x-lucide-calculator class="w-3.5 h-3.5 text-cyan-400" />
+                                    <span>Kalkulasi Jam Menonton:</span>
+                                </span>
+                                <span class="text-xs font-mono font-bold text-cyan-300 bg-cyan-950/60 px-2.5 py-0.5 rounded border border-cyan-500/40" 
+                                      x-text="formattedCalculation">
+                                </span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Hidden Poster & Backdrop -->
                     <input type="hidden" id="input_poster_url" name="poster_url" value="{{ old('poster_url') }}">
                     <input type="hidden" id="input_backdrop_url" name="backdrop_url" value="{{ old('backdrop_url') }}">
-                    <input type="hidden" id="input_total_seasons" name="total_seasons" value="{{ old('total_seasons') }}">
-                    <input type="hidden" id="input_total_episodes" name="total_episodes" value="{{ old('total_episodes') }}">
 
                     <!-- Synopsis -->
                     <div>
@@ -273,30 +345,32 @@
                         </div>
                     </div>
 
-                    <!-- Initial Season / Episode -->
-                    <div class="grid grid-cols-2 gap-4">
+                    <!-- Initial Season / Episode (Series Only) -->
+                    <div x-show="isSeries" class="grid grid-cols-2 gap-4 p-3.5 bg-zinc-900/50 border border-slate-800 rounded-xl">
                         <div>
-                            <label for="current_season" class="block font-bold text-zinc-400 mb-1">
-                                Season Saat Ini (Series)
+                            <label for="current_season" class="block font-bold text-zinc-200 mb-1">
+                                Mulai dari Season
                             </label>
                             <input type="number" 
                                    id="current_season" 
                                    name="current_season" 
-                                   value="1" 
+                                   value="{{ old('current_season', 1) }}" 
                                    min="1"
                                    class="w-full neo-input px-3 py-2 rounded-lg text-xs">
+                            <span class="text-[10px] text-zinc-400 mt-0.5 block">Nomor season saat ini</span>
                         </div>
 
                         <div>
-                            <label for="current_episode" class="block font-bold text-zinc-400 mb-1">
-                                Episode Saat Ini (Series)
+                            <label for="current_episode" class="block font-bold text-zinc-200 mb-1">
+                                Mulai dari Episode
                             </label>
                             <input type="number" 
                                    id="current_episode" 
                                    name="current_episode" 
-                                   value="0" 
+                                   value="{{ old('current_episode', 0) }}" 
                                    min="0"
                                    class="w-full neo-input px-3 py-2 rounded-lg text-xs">
+                            <span class="text-[10px] text-zinc-400 mt-0.5 block">Episode terakhir yang sudah ditonton</span>
                         </div>
                     </div>
 

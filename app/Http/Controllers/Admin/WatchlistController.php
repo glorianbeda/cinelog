@@ -15,9 +15,12 @@ class WatchlistController extends Controller
     {
         $status = $request->input('status', 'all');
 
-        $query = Watchlist::with(['movieSeries.genres'])->latest('updated_at');
+        $query = Watchlist::with(['movieSeries.genres', 'movieSeries.reviews'])->latest('updated_at');
 
-        if ($status !== 'all' && in_array($status, ['plan_to_watch', 'watching', 'on_hold', 'dropped', 'completed'])) {
+        if ($status === 'needs_review') {
+            $query->where('status', 'completed')
+                ->whereDoesntHave('movieSeries.reviews');
+        } elseif ($status !== 'all' && in_array($status, ['plan_to_watch', 'watching', 'on_hold', 'dropped', 'completed'])) {
             $query->where('status', $status);
         }
 
@@ -28,6 +31,7 @@ class WatchlistController extends Controller
             'watching' => Watchlist::where('status', 'watching')->count(),
             'plan_to_watch' => Watchlist::where('status', 'plan_to_watch')->count(),
             'completed' => Watchlist::where('status', 'completed')->count(),
+            'needs_review' => Watchlist::where('status', 'completed')->whereDoesntHave('movieSeries.reviews')->count(),
             'on_hold' => Watchlist::where('status', 'on_hold')->count(),
             'dropped' => Watchlist::where('status', 'dropped')->count(),
         ];
@@ -122,13 +126,24 @@ class WatchlistController extends Controller
     {
         $direction = $request->input('direction', 'up');
         $newEp = $direction === 'up' ? $watchlist->current_episode + 1 : max(0, $watchlist->current_episode - 1);
+        $totalEpisodes = $watchlist->movieSeries?->total_episodes;
+
+        if ($totalEpisodes && $totalEpisodes > 0 && $newEp >= $totalEpisodes) {
+            $newEp = $totalEpisodes;
+            $watchlist->update([
+                'current_episode' => $newEp,
+                'status' => 'completed',
+            ]);
+
+            return back()->with('success', "🎉 Serial \"{$watchlist->movieSeries->title}\" selesai ditonton (Ep {$newEp}/{$totalEpisodes})! Siap untuk diberikan ulasan & rating.");
+        }
 
         $watchlist->update([
             'current_episode' => $newEp,
-            'status' => 'watching',
+            'status' => $newEp > 0 ? 'watching' : $watchlist->status,
         ]);
 
-        return back()->with('success', "Progres episode diperbarui: Ep {$newEp}");
+        return back()->with('success', "Progres episode diperbarui: Ep {$newEp}" . ($totalEpisodes ? "/{$totalEpisodes}" : ''));
     }
 
     public function updateStatus(Request $request, Watchlist $watchlist)

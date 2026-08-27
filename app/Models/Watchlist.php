@@ -39,4 +39,52 @@ class Watchlist extends Model
             default => ['label' => $this->status, 'class' => 'bg-zinc-700 text-white border-2 border-slate-700'],
         };
     }
+
+    public function getIsFinishedAttribute(): bool
+    {
+        if ($this->status === 'completed') {
+            return true;
+        }
+
+        if ($this->movieSeries && in_array($this->movieSeries->type, ['series', 'anime'])) {
+            $totalEps = $this->movieSeries->total_episodes;
+            if ($totalEps && $totalEps > 0 && $this->current_episode >= $totalEps) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getProgressPercentageAttribute(): int
+    {
+        if ($this->is_finished) {
+            return 100;
+        }
+
+        if ($this->movieSeries && in_array($this->movieSeries->type, ['series', 'anime'])) {
+            $totalEps = $this->movieSeries->total_episodes;
+            if ($totalEps && $totalEps > 0) {
+                return (int) min(100, round(($this->current_episode / $totalEps) * 100));
+            }
+            return $this->status === 'watching' && $this->current_episode > 0 ? 50 : 0;
+        }
+
+        return match ($this->status) {
+            'completed' => 100,
+            'watching' => 50,
+            default => 0,
+        };
+    }
+
+    public function getNeedsReviewAttribute(): bool
+    {
+        if (! $this->is_finished) {
+            return false;
+        }
+
+        return ! Review::where('movie_series_id', $this->movie_series_id)
+            ->where('user_id', $this->user_id)
+            ->exists();
+    }
 }

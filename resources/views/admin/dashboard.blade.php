@@ -28,7 +28,28 @@
                 <span>Tambah Watchlist</span>
             </a>
         </div>
-    </div>
+    <!-- Pending Review Alert Banner -->
+    @if(($pendingReviewsCount ?? 0) > 0)
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-purple-500/10 to-transparent border-2 border-amber-400 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[4px_4px_0px_#F59E0B]">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-400 text-black flex items-center justify-center font-bold text-xl shrink-0 shadow-[2px_2px_0px_#000]">
+                    ⭐
+                </div>
+                <div>
+                    <h3 class="font-bold text-white font-mono text-sm sm:text-base">
+                        Ada {{ $pendingReviewsCount }} Tontonan Selesai Siap Diberi Rating!
+                    </h3>
+                    <p class="text-xs text-zinc-300 font-mono">
+                        Item watchlist yang sudah usai kini siap dipublikasikan ke katalog ulasan Anda.
+                    </p>
+                </div>
+            </div>
+            <a href="{{ route('admin.watchlist.index', ['status' => 'needs_review']) }}" 
+               class="neo-btn px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-mono font-black text-xs shrink-0 border-2 border-black shadow-[2px_2px_0px_#fff]">
+                Tulis Ulasan & Beri Rating →
+            </a>
+        </div>
+    @endif
 
     <!-- 4 Key Stat Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -161,37 +182,46 @@
             @else
                 <div class="space-y-3">
                     @foreach($activeWatchlist as $item)
-                        <div class="flex items-center justify-between gap-3 p-2.5 bg-zinc-900/60 border border-slate-800 rounded-xl">
-                            <div class="min-w-0">
-                                <h4 class="font-bold text-white text-xs truncate">{{ $item->movieSeries->title }}</h4>
-                                <span class="text-xs font-mono text-emerald-400 font-bold">
-                                    Season {{ $item->current_season }} Episode {{ $item->current_episode }}
-                                </span>
+                        <div class="p-3 bg-zinc-900/60 border border-slate-800 rounded-xl space-y-2">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="min-w-0 flex-1">
+                                    <h4 class="font-bold text-white text-xs truncate">{{ $item->movieSeries->title }}</h4>
+                                    <div class="flex items-center justify-between text-[11px] font-mono text-emerald-400 font-bold mt-0.5">
+                                        <span>Season {{ $item->current_season }} Ep {{ $item->current_episode }} @if($item->movieSeries->total_episodes) <span class="text-zinc-500 font-normal">/ {{ $item->movieSeries->total_episodes }}</span> @endif</span>
+                                        <span class="text-zinc-400 text-[10px]">{{ $item->progress_percentage }}%</span>
+                                    </div>
+                                </div>
+
+                                <!-- Episode Quick Counter Actions -->
+                                <div class="flex items-center gap-1 shrink-0 font-mono">
+                                    <form action="{{ route('admin.watchlist.progress', $item) }}" method="POST" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="direction" value="down">
+                                        <button type="submit" class="w-7 h-7 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded font-bold text-xs flex items-center justify-center border border-slate-700">
+                                            -
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ route('admin.watchlist.progress', $item) }}" method="POST" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="direction" value="up">
+                                        <button type="submit" class="w-7 h-7 bg-emerald-500 hover:bg-emerald-400 text-black rounded font-bold text-xs flex items-center justify-center border border-black shadow-[1px_1px_0px_#fff]">
+                                            +
+                                        </button>
+                                    </form>
+
+                                    <a href="{{ route('admin.reviews.create', ['watchlist_id' => $item->id]) }}" 
+                                       title="Tandai selesai & buat ulasan"
+                                       class="p-1.5 text-amber-400 hover:bg-amber-400 hover:text-black bg-zinc-800 rounded ml-1 border border-amber-500/40 transition-colors">
+                                        <x-lucide-award class="w-3.5 h-3.5" />
+                                    </a>
+                                </div>
                             </div>
 
-                            <!-- Episode Quick Counter Actions -->
-                            <div class="flex items-center gap-1 shrink-0 font-mono">
-                                <form action="{{ route('admin.watchlist.progress', $item) }}" method="POST" class="inline">
-                                    @csrf
-                                    <input type="hidden" name="direction" value="down">
-                                    <button type="submit" class="w-7 h-7 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded font-bold text-xs flex items-center justify-center border border-slate-700">
-                                        -
-                                    </button>
-                                </form>
-
-                                <form action="{{ route('admin.watchlist.progress', $item) }}" method="POST" class="inline">
-                                    @csrf
-                                    <input type="hidden" name="direction" value="up">
-                                    <button type="submit" class="w-7 h-7 bg-emerald-500 hover:bg-emerald-400 text-black rounded font-bold text-xs flex items-center justify-center border border-black shadow-[1px_1px_0px_#fff]">
-                                        +
-                                    </button>
-                                </form>
-
-                                <a href="{{ route('admin.reviews.create', ['watchlist_id' => $item->id]) }}" 
-                                   title="Tandai selesai & buat ulasan"
-                                   class="p-1.5 text-amber-400 hover:bg-amber-400 hover:text-black bg-zinc-800 rounded ml-1 border border-amber-500/40 transition-colors">
-                                    <x-lucide-check class="w-3.5 h-3.5" />
-                                </a>
+                            <!-- Visual Progress Bar -->
+                            <div class="w-full bg-zinc-800 rounded-full h-1.5 border border-slate-700 overflow-hidden">
+                                <div class="bg-gradient-to-r from-cyan-400 to-emerald-400 h-full rounded-full transition-all duration-300" 
+                                     style="width: {{ $item->progress_percentage }}%"></div>
                             </div>
                         </div>
                     @endforeach

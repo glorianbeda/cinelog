@@ -51,6 +51,11 @@
                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all {{ request()->routeIs('admin.watchlist.*') ? 'bg-purple-500 text-black border-2 border-black shadow-[2px_2px_0px_#fff]' : 'text-zinc-400 hover:text-white hover:bg-zinc-800' }}">
                         <x-lucide-bookmark class="w-4 h-4" />
                         <span>Watchlist</span>
+                        @if(($pendingReviewsCount ?? 0) > 0)
+                            <span class="inline-flex items-center justify-center px-1.5 py-0.5 min-w-[18px] text-[10px] font-mono font-black rounded-full shadow-[1px_1px_0px_#000] {{ request()->routeIs('admin.watchlist.*') ? 'bg-black text-amber-300 ring-1 ring-black' : 'bg-amber-400 text-black ring-2 ring-amber-400/50 animate-pulse' }}" title="{{ $pendingReviewsCount }} tontonan selesai siap diberi rating">
+                                {{ $pendingReviewsCount }}
+                            </span>
+                        @endif
                     </a>
                     <a href="{{ route('admin.settings.index') }}" 
                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all {{ request()->routeIs('admin.settings.*') ? 'bg-purple-500 text-black border-2 border-black shadow-[2px_2px_0px_#fff]' : 'text-zinc-400 hover:text-white hover:bg-zinc-800' }}">

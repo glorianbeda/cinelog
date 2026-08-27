@@ -145,7 +145,7 @@ class TmdbService
                     'director' => $director,
                     'cast_members' => $cast,
                     'genres' => $genres,
-                    'runtime_minutes' => $data['runtime'] ?? ($data['episode_run_time'][0] ?? null),
+                    'runtime_minutes' => $data['runtime'] ?? ($data['episode_run_time'][0] ?? ($data['last_episode_to_air']['runtime'] ?? null)),
                     'total_seasons' => $data['number_of_seasons'] ?? null,
                     'total_episodes' => $data['number_of_episodes'] ?? null,
                     'original_language' => strtoupper($data['original_language'] ?? 'en'),
