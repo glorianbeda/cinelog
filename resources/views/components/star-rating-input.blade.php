@@ -17,13 +17,13 @@
 
 <div x-data="starRating({{ (float) ($value ?? 0) }}, '{{ $name }}')" class="space-y-2">
     @if($label)
-        <div class="flex items-center justify-between">
-            <label class="block text-sm font-bold text-zinc-200 uppercase tracking-wider font-mono">
+        <div class="flex items-center justify-between gap-2 min-h-[28px]">
+            <label class="block text-sm font-bold text-zinc-200 uppercase tracking-wider font-mono truncate">
                 {{ $label }} @if($required)<span class="text-rose-500">*</span>@endif
             </label>
             <span x-text="ratingLabel" 
                   :class="badgeColorClass" 
-                  class="px-2.5 py-0.5 rounded text-xs font-mono font-bold tracking-wide transition-all duration-200">
+                  class="shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded text-[11px] sm:text-xs font-mono font-bold tracking-wide transition-colors duration-200">
             </span>
         </div>
     @endif
