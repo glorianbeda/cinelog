@@ -48,6 +48,6 @@ class SetupOwnerController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('admin.dashboard')->with('success', 'Selamat datang, ' . $user->name . '! Akun pemilik berhasil dikonfigurasi.');
+        return redirect()->route('admin.dashboard')->with('success', 'Selamat datang, '.$user->name.'! Akun pemilik berhasil dikonfigurasi.');
     }
 }

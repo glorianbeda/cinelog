@@ -17,14 +17,14 @@ class TmdbProxyController extends Controller
         $type = $request->input('type', 'all');
 
         if (empty(trim($query))) {
-            return response()->json(['results' => [], 'has_key' => !empty($this->tmdbService->getApiKey())]);
+            return response()->json(['results' => [], 'has_key' => ! empty($this->tmdbService->getApiKey())]);
         }
 
         $results = $this->tmdbService->search($query, $type);
 
         return response()->json([
             'results' => $results,
-            'has_key' => !empty($this->tmdbService->getApiKey()),
+            'has_key' => ! empty($this->tmdbService->getApiKey()),
         ]);
     }
 
@@ -32,7 +32,7 @@ class TmdbProxyController extends Controller
     {
         $details = $this->tmdbService->getDetails($id, $type);
 
-        if (!$details) {
+        if (! $details) {
             return response()->json(['error' => 'Gagal mengambil detail dari TMDB atau API Key belum diisi.'], 404);
         }
 

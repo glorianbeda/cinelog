@@ -38,6 +38,7 @@ class WatchlistController extends Controller
     public function create()
     {
         $genres = Genre::orderBy('name')->get();
+
         return view('admin.watchlist.create', compact('genres'));
     }
 
@@ -67,11 +68,11 @@ class WatchlistController extends Controller
 
         // Find or create MovieSeries
         $movie = null;
-        if (!empty($validated['tmdb_id'])) {
+        if (! empty($validated['tmdb_id'])) {
             $movie = MovieSeries::where('tmdb_id', $validated['tmdb_id'])->first();
         }
 
-        if (!$movie) {
+        if (! $movie) {
             $movie = MovieSeries::create([
                 'tmdb_id' => $validated['tmdb_id'] ?? null,
                 'type' => $validated['type'],
@@ -88,10 +89,10 @@ class WatchlistController extends Controller
             ]);
         }
 
-        if (!empty($validated['genres'])) {
+        if (! empty($validated['genres'])) {
             $genreIds = [];
             foreach ($validated['genres'] as $genreName) {
-                if (!empty(trim($genreName))) {
+                if (! empty(trim($genreName))) {
                     $genre = Genre::firstOrCreate(
                         ['slug' => Str::slug($genreName)],
                         ['name' => trim($genreName)]
@@ -114,14 +115,14 @@ class WatchlistController extends Controller
             ]
         );
 
-        return redirect()->route('admin.watchlist.index')->with('success', 'Berhasil menambahkan "' . $movie->title . '" ke antrean tontonan.');
+        return redirect()->route('admin.watchlist.index')->with('success', 'Berhasil menambahkan "'.$movie->title.'" ke antrean tontonan.');
     }
 
     public function updateProgress(Request $request, Watchlist $watchlist)
     {
         $direction = $request->input('direction', 'up');
         $newEp = $direction === 'up' ? $watchlist->current_episode + 1 : max(0, $watchlist->current_episode - 1);
-        
+
         $watchlist->update([
             'current_episode' => $newEp,
             'status' => 'watching',
@@ -146,6 +147,6 @@ class WatchlistController extends Controller
         $title = $watchlist->movieSeries->title;
         $watchlist->delete();
 
-        return redirect()->route('admin.watchlist.index')->with('success', 'Item "' . $title . '" dihapus dari watchlist.');
+        return redirect()->route('admin.watchlist.index')->with('success', 'Item "'.$title.'" dihapus dari watchlist.');
     }
 }

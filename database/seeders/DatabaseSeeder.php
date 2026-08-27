@@ -31,8 +31,8 @@ class DatabaseSeeder extends Seeder
 
         // 2. Seed Genres
         $genreList = [
-            'Sci-Fi', 'Action', 'Drama', 'Thriller', 'Horror', 'Animation', 
-            'Adventure', 'Crime', 'Mystery', 'Comedy', 'Fantasy', 'Romance'
+            'Sci-Fi', 'Action', 'Drama', 'Thriller', 'Horror', 'Animation',
+            'Adventure', 'Crime', 'Mystery', 'Comedy', 'Fantasy', 'Romance',
         ];
 
         $genres = [];
@@ -165,7 +165,7 @@ class DatabaseSeeder extends Seeder
                 'rating_acting' => 4.9,
                 'rating_audio' => 5.0,
                 'headline' => 'Mahakarya animasi global dengan estetika lukisan bergerak yang revolusioner.',
-                'review_content' => "Fortiche Studio dan Riot Games berhasil menciptakan serial animasi terbaik dalam satu dekade terakhir. Penulisan karakter Jinx dan Silco begitu tragis dan manusiawi.",
+                'review_content' => 'Fortiche Studio dan Riot Games berhasil menciptakan serial animasi terbaik dalam satu dekade terakhir. Penulisan karakter Jinx dan Silco begitu tragis dan manusiawi.',
                 'favorite_quote' => 'In the pursuit of great, we failed to do good.',
                 'is_spoiler' => false,
                 'is_favorite' => true,

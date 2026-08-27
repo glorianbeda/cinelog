@@ -45,7 +45,7 @@ class MovieSeries extends Model
     {
         static::creating(function ($movie) {
             if (empty($movie->slug)) {
-                $movie->slug = Str::slug($movie->title) . '-' . ($movie->release_year ?? time());
+                $movie->slug = Str::slug($movie->title).'-'.($movie->release_year ?? time());
                 // ensure uniqueness
                 $originalSlug = $movie->slug;
                 $count = 1;
@@ -87,7 +87,7 @@ class MovieSeries extends Model
             return $this->poster_url;
         }
 
-        return 'https://image.tmdb.org/t/p/w500' . $this->poster_url;
+        return 'https://image.tmdb.org/t/p/w500'.$this->poster_url;
     }
 
     public function getBackdropImageUrlAttribute(): string
@@ -100,7 +100,7 @@ class MovieSeries extends Model
             return $this->backdrop_url;
         }
 
-        return 'https://image.tmdb.org/t/p/w1280' . $this->backdrop_url;
+        return 'https://image.tmdb.org/t/p/w1280'.$this->backdrop_url;
     }
 
     public function getFormattedRuntimeAttribute(): string
@@ -108,17 +108,19 @@ class MovieSeries extends Model
         if ($this->type === 'movie' && $this->runtime_minutes) {
             $hours = floor($this->runtime_minutes / 60);
             $mins = $this->runtime_minutes % 60;
+
             return $hours > 0 ? "{$hours}j {$mins}m" : "{$mins}m";
         }
 
         if ($this->type !== 'movie') {
             $parts = [];
             if ($this->total_seasons) {
-                $parts[] = "{$this->total_seasons} Season" . ($this->total_seasons > 1 ? 's' : '');
+                $parts[] = "{$this->total_seasons} Season".($this->total_seasons > 1 ? 's' : '');
             }
             if ($this->total_episodes) {
                 $parts[] = "{$this->total_episodes} Eps";
             }
+
             return implode(' • ', $parts);
         }
 

@@ -84,8 +84,56 @@
     </div>
 
     <!-- Main Watchlist Form -->
-    <form action="{{ route('admin.watchlist.store') }}" method="POST" class="space-y-8">
+    <form action="{{ route('admin.watchlist.store') }}" method="POST" x-data="formDraft('cinelog_draft_watchlist_create')" class="space-y-8">
         @csrf
+
+        <!-- DRAFT AUTO-SAVE NOTIFICATION BANNER -->
+        <template x-if="hasDraft">
+            <div class="p-4 bg-[#083344]/90 border-2 border-cyan-500 rounded-2xl shadow-[6px_6px_0px_0px_#06B6D4] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-start sm:items-center gap-3">
+                    <div class="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-400 shrink-0 border border-cyan-500/40">
+                        <x-lucide-sparkles class="w-5 h-5 text-cyan-400" />
+                    </div>
+                    <div class="font-mono">
+                        <div class="text-xs font-bold text-white flex items-center gap-2">
+                            <span>Draf Watchlist Tersimpan Ditemukan</span>
+                            <span class="px-2 py-0.5 rounded bg-cyan-500/30 text-cyan-300 text-[10px]" x-text="'Tersimpan: ' + savedAt"></span>
+                        </div>
+                        <p class="text-[11px] text-zinc-300 mt-0.5 font-sans">
+                            Data antrean watchlist yang Anda ketik sebelumnya tersimpan secara lokal di browser.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                    <button type="button" 
+                            @click="restoreDraft()" 
+                            class="neo-btn px-3.5 py-1.5 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-black text-xs font-mono font-bold shadow-[2px_2px_0px_#fff] flex items-center gap-1.5">
+                        <x-lucide-history class="w-3.5 h-3.5" />
+                        <span>Pulihkan Draf</span>
+                    </button>
+                    <button type="button" 
+                            @click="discardDraft()" 
+                            title="Buang Draf"
+                            class="neo-btn p-1.5 rounded-lg bg-zinc-800 hover:bg-rose-950 hover:text-rose-400 text-zinc-400 text-xs font-mono border border-slate-700">
+                        <x-lucide-trash-2 class="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+        </template>
+
+        <!-- Toast Feedback Message -->
+        <template x-if="toastMessage">
+            <div class="p-3 bg-emerald-500/20 border-2 border-emerald-500 rounded-xl text-emerald-300 font-mono text-xs flex items-center justify-between shadow-[4px_4px_0px_0px_#10B981]">
+                <div class="flex items-center gap-2">
+                    <x-lucide-check-circle class="w-4 h-4 text-emerald-400" />
+                    <span x-text="toastMessage"></span>
+                </div>
+                <button type="button" @click="toastMessage = ''" class="text-emerald-400 hover:text-white">
+                    <x-lucide-x class="w-3.5 h-3.5" />
+                </button>
+            </div>
+        </template>
 
         <input type="hidden" id="input_tmdb_id" name="tmdb_id" value="{{ old('tmdb_id') }}">
 
@@ -267,16 +315,40 @@
             </div>
         </div>
 
-        <!-- Submit Button -->
-        <div class="flex items-center justify-end gap-4 pt-4">
-            <a href="{{ route('admin.watchlist.index') }}" class="neo-btn px-5 py-3 rounded-xl bg-zinc-800 text-zinc-300 font-mono text-sm border border-slate-700">
-                Batal
-            </a>
+        <!-- Submit Button & Live Draft Indicator -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
+            <!-- Auto-Save Status Indicator -->
+            <div class="flex items-center gap-2 text-xs font-mono text-zinc-400">
+                <template x-if="saveStatus === 'saving'">
+                    <span class="flex items-center gap-1.5 text-amber-400">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                        <span>Menyimpan draf di browser...</span>
+                    </span>
+                </template>
+                <template x-if="saveStatus === 'saved'">
+                    <span class="flex items-center gap-1.5 text-cyan-400">
+                        <x-lucide-check class="w-3.5 h-3.5" />
+                        <span>Draf tersimpan di browser (<span x-text="savedAt"></span>)</span>
+                    </span>
+                </template>
+                <template x-if="saveStatus === 'idle'">
+                    <span class="flex items-center gap-1.5 text-zinc-500 text-[11px]">
+                        <x-lucide-shield-check class="w-3.5 h-3.5 text-zinc-600" />
+                        <span>Auto-save browser aktif</span>
+                    </span>
+                </template>
+            </div>
 
-            <button type="submit" class="neo-btn px-8 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black text-sm font-bold font-mono shadow-[4px_4px_0px_0px_#fff]">
-                <x-lucide-bookmark-check class="w-4 h-4 mr-2" />
-                <span>Simpan ke Watchlist</span>
-            </button>
+            <div class="flex items-center gap-4">
+                <a href="{{ route('admin.watchlist.index') }}" class="neo-btn px-5 py-3 rounded-xl bg-zinc-800 text-zinc-300 font-mono text-sm border border-slate-700">
+                    Batal
+                </a>
+
+                <button type="submit" class="neo-btn px-8 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black text-sm font-bold font-mono shadow-[4px_4px_0px_0px_#fff]">
+                    <x-lucide-bookmark-check class="w-4 h-4 mr-2" />
+                    <span>Simpan ke Watchlist</span>
+                </button>
+            </div>
         </div>
     </form>
 </div>

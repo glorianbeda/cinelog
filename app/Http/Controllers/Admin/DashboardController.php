@@ -7,8 +7,6 @@ use App\Models\Genre;
 use App\Models\MovieSeries;
 use App\Models\Review;
 use App\Models\Watchlist;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -45,8 +43,8 @@ class DashboardController extends Controller
         }
 
         // Genre breakdown for donut chart
-        $genreStats = Genre::withCount('moviesSeries')
-            ->having('movies_series_count', '>', 0)
+        $genreStats = Genre::has('moviesSeries')
+            ->withCount('moviesSeries')
             ->orderByDesc('movies_series_count')
             ->take(6)
             ->get();

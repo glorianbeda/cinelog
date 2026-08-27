@@ -22,13 +22,13 @@ class CatalogController extends Controller
             $search = $request->input('q');
             $query->where(function ($q) use ($search) {
                 $q->where('headline', 'like', "%{$search}%")
-                  ->orWhere('review_content', 'like', "%{$search}%")
-                  ->orWhereHas('movieSeries', function ($mq) use ($search) {
-                      $mq->where('title', 'like', "%{$search}%")
-                         ->orWhere('original_title', 'like', "%{$search}%")
-                         ->orWhere('director', 'like', "%{$search}%")
-                         ->orWhere('synopsis', 'like', "%{$search}%");
-                  });
+                    ->orWhere('review_content', 'like', "%{$search}%")
+                    ->orWhereHas('movieSeries', function ($mq) use ($search) {
+                        $mq->where('title', 'like', "%{$search}%")
+                            ->orWhere('original_title', 'like', "%{$search}%")
+                            ->orWhere('director', 'like', "%{$search}%")
+                            ->orWhere('synopsis', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -72,13 +72,13 @@ class CatalogController extends Controller
                 break;
             case 'year_desc':
                 $query->join('movies_series', 'reviews.movie_series_id', '=', 'movies_series.id')
-                      ->orderByDesc('movies_series.release_year')
-                      ->select('reviews.*');
+                    ->orderByDesc('movies_series.release_year')
+                    ->select('reviews.*');
                 break;
             case 'title_asc':
                 $query->join('movies_series', 'reviews.movie_series_id', '=', 'movies_series.id')
-                      ->orderBy('movies_series.title')
-                      ->select('reviews.*');
+                    ->orderBy('movies_series.title')
+                    ->select('reviews.*');
                 break;
             case 'latest':
             default:
@@ -88,11 +88,11 @@ class CatalogController extends Controller
 
         $reviews = $query->paginate(12)->withQueryString();
 
-        $genres = Genre::whereHas('moviesSeries.reviews', fn($q) => $q->where('is_published', true))
+        $genres = Genre::whereHas('moviesSeries.reviews', fn ($q) => $q->where('is_published', true))
             ->orderBy('name')
             ->get();
 
-        $years = MovieSeries::whereHas('reviews', fn($q) => $q->where('is_published', true))
+        $years = MovieSeries::whereHas('reviews', fn ($q) => $q->where('is_published', true))
             ->whereNotNull('release_year')
             ->distinct()
             ->orderByDesc('release_year')

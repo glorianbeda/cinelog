@@ -11,7 +11,7 @@ class EnsureOwnerSetup
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (User::count() === 0 && !$request->routeIs('setup.*')) {
+        if (User::count() === 0 && ! $request->routeIs('setup.*')) {
             return redirect()->route('setup.show');
         }
 

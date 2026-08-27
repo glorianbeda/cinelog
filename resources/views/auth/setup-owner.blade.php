@@ -43,8 +43,56 @@
 
         <!-- Setup Form Card -->
         <div class="bg-[#161622] border-2 border-slate-700 rounded-2xl p-6 sm:p-8 shadow-[8px_8px_0px_0px_#F59E0B]">
-            <form action="{{ route('setup.store') }}" method="POST" class="space-y-6">
+            <form action="{{ route('setup.store') }}" method="POST" x-data="formDraft('cinelog_draft_setup_owner')" class="space-y-6">
                 @csrf
+
+                <!-- DRAFT AUTO-SAVE NOTIFICATION BANNER -->
+                <template x-if="hasDraft">
+                    <div class="p-4 bg-[#1e1b4b]/90 border-2 border-indigo-500 rounded-2xl shadow-[4px_4px_0px_0px_#6366F1] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-start sm:items-center gap-3">
+                            <div class="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 shrink-0">
+                                <x-lucide-sparkles class="w-5 h-5 text-indigo-400" />
+                            </div>
+                            <div class="font-mono">
+                                <div class="text-xs font-bold text-white flex items-center gap-2">
+                                    <span>Draf Profil Tersimpan Ditemukan</span>
+                                    <span class="px-2 py-0.5 rounded bg-indigo-500/30 text-indigo-300 text-[10px]" x-text="'Tersimpan: ' + savedAt"></span>
+                                </div>
+                                <p class="text-[11px] text-zinc-300 mt-0.5 font-sans">
+                                    Identitas kurator yang sebelumnya Anda masukkan tersimpan di browser.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                            <button type="button" 
+                                    @click="restoreDraft()" 
+                                    class="neo-btn px-3.5 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-black text-xs font-mono font-bold shadow-[2px_2px_0px_#fff] flex items-center gap-1.5">
+                                <x-lucide-history class="w-3.5 h-3.5" />
+                                <span>Pulihkan Data</span>
+                            </button>
+                            <button type="button" 
+                                    @click="discardDraft()" 
+                                    title="Buang Draf"
+                                    class="neo-btn p-1.5 rounded-lg bg-zinc-800 hover:bg-rose-950 hover:text-rose-400 text-zinc-400 text-xs font-mono border border-slate-700">
+                                <x-lucide-trash-2 class="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Toast Feedback Message -->
+                <template x-if="toastMessage">
+                    <div class="p-3 bg-emerald-500/20 border-2 border-emerald-500 rounded-xl text-emerald-300 font-mono text-xs flex items-center justify-between shadow-[4px_4px_0px_0px_#10B981]">
+                        <div class="flex items-center gap-2">
+                            <x-lucide-check-circle class="w-4 h-4 text-emerald-400" />
+                            <span x-text="toastMessage"></span>
+                        </div>
+                        <button type="button" @click="toastMessage = ''" class="text-emerald-400 hover:text-white">
+                            <x-lucide-x class="w-3.5 h-3.5" />
+                        </button>
+                    </div>
+                </template>
 
                 <!-- Section: Identitas Kurator -->
                 <div class="space-y-4">
@@ -181,8 +229,28 @@
                     </div>
                 </div>
 
-                <!-- Submit Button -->
-                <div class="pt-4">
+                <!-- Submit Button & Live Draft Indicator -->
+                <div class="pt-4 space-y-3">
+                    <div class="flex items-center justify-between text-xs font-mono text-zinc-400">
+                        <span class="flex items-center gap-1 text-zinc-500 text-[11px]">
+                            <x-lucide-shield-check class="w-3.5 h-3.5 text-zinc-600" />
+                            <span>Auto-save formulir browser aktif (password dikecualikan)</span>
+                        </span>
+
+                        <template x-if="saveStatus === 'saving'">
+                            <span class="flex items-center gap-1.5 text-amber-400">
+                                <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                                <span>Menyimpan draf...</span>
+                            </span>
+                        </template>
+                        <template x-if="saveStatus === 'saved'">
+                            <span class="flex items-center gap-1.5 text-emerald-400">
+                                <x-lucide-check class="w-3.5 h-3.5" />
+                                <span>Draf tersimpan (<span x-text="savedAt"></span>)</span>
+                            </span>
+                        </template>
+                    </div>
+
                     <button type="submit" 
                             class="w-full neo-btn py-3.5 px-6 rounded-xl bg-amber-400 hover:bg-amber-300 text-black text-base font-black font-mono shadow-[4px_4px_0px_0px_#A855F7]">
                         <x-lucide-check-circle-2 class="w-5 h-5 mr-2" />

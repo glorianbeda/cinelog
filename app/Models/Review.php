@@ -102,6 +102,7 @@ class Review extends Model
         if (empty($this->review_content)) {
             return '';
         }
+
         return Str::markdown($this->review_content);
     }
 }

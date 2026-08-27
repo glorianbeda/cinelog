@@ -12,6 +12,7 @@ use App\Http\Controllers\PublicWatchlistController;
 use App\Http\Controllers\ReviewDetailController;
 use App\Http\Controllers\SetupOwnerController;
 use App\Http\Controllers\StatsController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 // Public Routes
@@ -28,7 +29,8 @@ Route::middleware(['prevent.duplicate.setup'])->group(function () {
 });
 
 Route::get('/setup-storage', function () {
-    \Illuminate\Support\Facades\Artisan::call('storage:link');
+    Artisan::call('storage:link');
+
     return 'Storage berhasil di-link!';
 });
 

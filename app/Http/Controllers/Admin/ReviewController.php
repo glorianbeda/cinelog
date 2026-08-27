@@ -20,12 +20,12 @@ class ReviewController extends Controller
             $search = $request->input('q');
             $query->whereHas('movieSeries', function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('original_title', 'like', "%{$search}%");
+                    ->orWhere('original_title', 'like', "%{$search}%");
             })->orWhere('headline', 'like', "%{$search}%");
         }
 
         if ($request->filled('type')) {
-            $query->whereHas('movieSeries', fn($q) => $q->where('type', $request->input('type')));
+            $query->whereHas('movieSeries', fn ($q) => $q->where('type', $request->input('type')));
         }
 
         $reviews = $query->latest('watched_date')->latest('id')->paginate(15)->withQueryString();
@@ -36,7 +36,7 @@ class ReviewController extends Controller
     public function create(Request $request)
     {
         $genres = Genre::orderBy('name')->get();
-        
+
         // Check if prefilling from a watchlist item
         $watchlistPreFill = null;
         if ($request->filled('watchlist_id')) {
@@ -89,19 +89,19 @@ class ReviewController extends Controller
 
         // Process Cast
         $cast = null;
-        if (!empty($validated['cast_members'])) {
-            $cast = is_array($validated['cast_members']) 
-                ? $validated['cast_members'] 
+        if (! empty($validated['cast_members'])) {
+            $cast = is_array($validated['cast_members'])
+                ? $validated['cast_members']
                 : json_decode($validated['cast_members'], true);
         }
 
         // Find or create MovieSeries
         $movie = null;
-        if (!empty($validated['tmdb_id'])) {
+        if (! empty($validated['tmdb_id'])) {
             $movie = MovieSeries::where('tmdb_id', $validated['tmdb_id'])->first();
         }
 
-        if (!$movie) {
+        if (! $movie) {
             $movie = MovieSeries::create([
                 'tmdb_id' => $validated['tmdb_id'] ?? null,
                 'type' => $validated['type'],
@@ -137,10 +137,10 @@ class ReviewController extends Controller
         }
 
         // Attach Genres
-        if (!empty($validated['genres'])) {
+        if (! empty($validated['genres'])) {
             $genreIds = [];
             foreach ($validated['genres'] as $genreName) {
-                if (!empty(trim($genreName))) {
+                if (! empty(trim($genreName))) {
                     $genre = Genre::firstOrCreate(
                         ['slug' => Str::slug($genreName)],
                         ['name' => trim($genreName)]
@@ -173,14 +173,14 @@ class ReviewController extends Controller
         ]);
 
         // If converted from watchlist, mark as completed
-        if (!empty($validated['watchlist_id'])) {
+        if (! empty($validated['watchlist_id'])) {
             $wl = Watchlist::find($validated['watchlist_id']);
             if ($wl) {
                 $wl->update(['status' => 'completed']);
             }
         }
 
-        return redirect()->route('admin.reviews.index')->with('success', 'Ulasan untuk "' . $movie->title . '" berhasil disimpan!');
+        return redirect()->route('admin.reviews.index')->with('success', 'Ulasan untuk "'.$movie->title.'" berhasil disimpan!');
     }
 
     public function edit(Review $review)
@@ -224,9 +224,9 @@ class ReviewController extends Controller
         ]);
 
         $cast = null;
-        if (!empty($validated['cast_members'])) {
-            $cast = is_array($validated['cast_members']) 
-                ? $validated['cast_members'] 
+        if (! empty($validated['cast_members'])) {
+            $cast = is_array($validated['cast_members'])
+                ? $validated['cast_members']
                 : json_decode($validated['cast_members'], true);
         }
 
@@ -247,10 +247,10 @@ class ReviewController extends Controller
             'total_episodes' => $validated['total_episodes'] ?? null,
         ]);
 
-        if (!empty($validated['genres'])) {
+        if (! empty($validated['genres'])) {
             $genreIds = [];
             foreach ($validated['genres'] as $genreName) {
-                if (!empty(trim($genreName))) {
+                if (! empty(trim($genreName))) {
                     $genre = Genre::firstOrCreate(
                         ['slug' => Str::slug($genreName)],
                         ['name' => trim($genreName)]
@@ -287,6 +287,6 @@ class ReviewController extends Controller
         $title = $review->movieSeries->title;
         $review->delete();
 
-        return redirect()->route('admin.reviews.index')->with('success', 'Ulasan untuk "' . $title . '" berhasil dihapus.');
+        return redirect()->route('admin.reviews.index')->with('success', 'Ulasan untuk "'.$title.'" berhasil dihapus.');
     }
 }

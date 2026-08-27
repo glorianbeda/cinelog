@@ -24,9 +24,57 @@
 
     @php $movie = $review->movieSeries; @endphp
 
-    <form action="{{ route('admin.reviews.update', $review) }}" method="POST" class="space-y-8">
+    <form action="{{ route('admin.reviews.update', $review) }}" method="POST" x-data="formDraft('cinelog_draft_review_edit_{{ $review->id }}')" class="space-y-8">
         @csrf
         @method('PUT')
+
+        <!-- DRAFT AUTO-SAVE NOTIFICATION BANNER -->
+        <template x-if="hasDraft">
+            <div class="p-4 bg-[#1e1b4b]/90 border-2 border-indigo-500 rounded-2xl shadow-[6px_6px_0px_0px_#6366F1] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-start sm:items-center gap-3">
+                    <div class="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-400 shrink-0 border border-indigo-500/40">
+                        <x-lucide-sparkles class="w-5 h-5 text-indigo-400" />
+                    </div>
+                    <div class="font-mono">
+                        <div class="text-xs font-bold text-white flex items-center gap-2">
+                            <span>Draf Edit Tersimpan di Browser Ditemukan</span>
+                            <span class="px-2 py-0.5 rounded bg-indigo-500/30 text-indigo-300 text-[10px]" x-text="'Tersimpan: ' + savedAt"></span>
+                        </div>
+                        <p class="text-[11px] text-zinc-300 mt-0.5 font-sans">
+                            Perubahan belum tersimpan sebelumnya tersedia di memori lokal browser.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                    <button type="button" 
+                            @click="restoreDraft()" 
+                            class="neo-btn px-3.5 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-black text-xs font-mono font-bold shadow-[2px_2px_0px_#fff] flex items-center gap-1.5">
+                        <x-lucide-history class="w-3.5 h-3.5" />
+                        <span>Pulihkan Perubahan</span>
+                    </button>
+                    <button type="button" 
+                            @click="discardDraft()" 
+                            title="Buang Draf"
+                            class="neo-btn p-1.5 rounded-lg bg-zinc-800 hover:bg-rose-950 hover:text-rose-400 text-zinc-400 text-xs font-mono border border-slate-700">
+                        <x-lucide-trash-2 class="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+        </template>
+
+        <!-- Toast Feedback Message -->
+        <template x-if="toastMessage">
+            <div class="p-3 bg-emerald-500/20 border-2 border-emerald-500 rounded-xl text-emerald-300 font-mono text-xs flex items-center justify-between shadow-[4px_4px_0px_0px_#10B981]">
+                <div class="flex items-center gap-2">
+                    <x-lucide-check-circle class="w-4 h-4 text-emerald-400" />
+                    <span x-text="toastMessage"></span>
+                </div>
+                <button type="button" @click="toastMessage = ''" class="text-emerald-400 hover:text-white">
+                    <x-lucide-x class="w-3.5 h-3.5" />
+                </button>
+            </div>
+        </template>
 
         <input type="hidden" id="input_cast_members" name="cast_members" value="{{ old('cast_members', json_encode($movie->cast_members ?? [])) }}">
 
@@ -328,16 +376,40 @@
             </div>
         </div>
 
-        <!-- Submit Button -->
-        <div class="flex items-center justify-end gap-4 pt-4">
-            <a href="{{ route('admin.reviews.index') }}" class="neo-btn px-5 py-3 rounded-xl bg-zinc-800 text-zinc-300 font-mono text-sm border border-slate-700">
-                Batal
-            </a>
+        <!-- Submit Button & Live Draft Indicator -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
+            <!-- Auto-Save Status Indicator -->
+            <div class="flex items-center gap-2 text-xs font-mono text-zinc-400">
+                <template x-if="saveStatus === 'saving'">
+                    <span class="flex items-center gap-1.5 text-amber-400">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                        <span>Menyimpan draf di browser...</span>
+                    </span>
+                </template>
+                <template x-if="saveStatus === 'saved'">
+                    <span class="flex items-center gap-1.5 text-purple-400">
+                        <x-lucide-check class="w-3.5 h-3.5" />
+                        <span>Draf tersimpan di browser (<span x-text="savedAt"></span>)</span>
+                    </span>
+                </template>
+                <template x-if="saveStatus === 'idle'">
+                    <span class="flex items-center gap-1.5 text-zinc-500 text-[11px]">
+                        <x-lucide-shield-check class="w-3.5 h-3.5 text-zinc-600" />
+                        <span>Auto-save browser aktif</span>
+                    </span>
+                </template>
+            </div>
 
-            <button type="submit" class="neo-btn px-8 py-3 rounded-xl bg-purple-500 hover:bg-purple-400 text-black text-sm font-bold font-mono shadow-[4px_4px_0px_0px_#fff]">
-                <x-lucide-check class="w-4 h-4 mr-2" />
-                <span>Perbarui Ulasan</span>
-            </button>
+            <div class="flex items-center gap-4">
+                <a href="{{ route('admin.reviews.index') }}" class="neo-btn px-5 py-3 rounded-xl bg-zinc-800 text-zinc-300 font-mono text-sm border border-slate-700">
+                    Batal
+                </a>
+
+                <button type="submit" class="neo-btn px-8 py-3 rounded-xl bg-purple-500 hover:bg-purple-400 text-black text-sm font-bold font-mono shadow-[4px_4px_0px_0px_#fff]">
+                    <x-lucide-check class="w-4 h-4 mr-2" />
+                    <span>Perbarui Ulasan</span>
+                </button>
+            </div>
         </div>
     </form>
 </div>

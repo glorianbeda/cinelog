@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -10,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 class TmdbService
 {
     protected string $baseUrl = 'https://api.themoviedb.org/3';
+
     protected ?string $apiKey = null;
 
     public function __construct()
@@ -46,9 +46,10 @@ class TmdbService
 
             if ($response->successful()) {
                 $results = $response->json('results', []);
+
                 return array_values(array_filter(array_map(function ($item) {
                     $mediaType = $item['media_type'] ?? ($item['title'] ?? null ? 'movie' : 'tv');
-                    if (!in_array($mediaType, ['movie', 'tv'])) {
+                    if (! in_array($mediaType, ['movie', 'tv'])) {
                         return null;
                     }
 
@@ -72,7 +73,7 @@ class TmdbService
                 }, $results)));
             }
         } catch (\Exception $e) {
-            Log::error("TMDB search error: " . $e->getMessage());
+            Log::error('TMDB search error: '.$e->getMessage());
         }
 
         return [];
@@ -106,7 +107,7 @@ class TmdbService
                 $director = null;
                 if ($isTv) {
                     $creators = array_column($data['created_by'] ?? [], 'name');
-                    $director = !empty($creators) ? implode(', ', $creators) : null;
+                    $director = ! empty($creators) ? implode(', ', $creators) : null;
                 } else {
                     $crew = $data['credits']['crew'] ?? [];
                     foreach ($crew as $member) {
@@ -151,7 +152,7 @@ class TmdbService
                 ];
             }
         } catch (\Exception $e) {
-            Log::error("TMDB details error: " . $e->getMessage());
+            Log::error('TMDB details error: '.$e->getMessage());
         }
 
         return null;

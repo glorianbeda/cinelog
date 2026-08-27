@@ -7,7 +7,6 @@ use App\Models\MovieSeries;
 use App\Models\Review;
 use App\Models\User;
 use App\Models\Watchlist;
-use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -37,15 +36,15 @@ class HomeController extends Controller
 
         // Compute Stats
         $totalReviews = Review::where('is_published', true)->count();
-        $totalMovies = MovieSeries::where('type', 'movie')->whereHas('reviews', fn($q) => $q->where('is_published', true))->count();
-        $totalSeries = MovieSeries::whereIn('type', ['series', 'anime'])->whereHas('reviews', fn($q) => $q->where('is_published', true))->count();
+        $totalMovies = MovieSeries::where('type', 'movie')->whereHas('reviews', fn ($q) => $q->where('is_published', true))->count();
+        $totalSeries = MovieSeries::whereIn('type', ['series', 'anime'])->whereHas('reviews', fn ($q) => $q->where('is_published', true))->count();
         $avgRating = Review::where('is_published', true)->avg('rating_overall') ?? 0;
-        
-        $totalRuntimeMinutes = MovieSeries::whereHas('reviews', fn($q) => $q->where('is_published', true))->sum('runtime_minutes') ?? 0;
+
+        $totalRuntimeMinutes = MovieSeries::whereHas('reviews', fn ($q) => $q->where('is_published', true))->sum('runtime_minutes') ?? 0;
         $totalRuntimeHours = round($totalRuntimeMinutes / 60);
 
         $genres = Genre::withCount(['moviesSeries' => function ($q) {
-            $q->whereHas('reviews', fn($r) => $r->where('is_published', true));
+            $q->whereHas('reviews', fn ($r) => $r->where('is_published', true));
         }])->orderByDesc('movies_series_count')->take(8)->get();
 
         return view('home', compact(

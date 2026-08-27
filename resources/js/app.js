@@ -11,6 +11,14 @@ Alpine.data('starRating', (initialValue = 0, inputName = 'rating_overall') => ({
     name: inputName,
     isPopping: false,
 
+    init() {
+        window.addEventListener('set-rating', (e) => {
+            if (e.detail && e.detail.name === this.name) {
+                this.rating = parseFloat(e.detail.value) || 0;
+            }
+        });
+    },
+
     get currentDisplayRating() {
         return this.hoverRating > 0 ? this.hoverRating : this.rating;
     },
@@ -62,6 +70,224 @@ Alpine.data('starRating', (initialValue = 0, inputName = 'rating_overall') => ({
         if (current >= starIndex) return 'full';
         if (current >= starIndex - 0.5) return 'half';
         return 'empty';
+    }
+}));
+
+// Form Draft Auto-Save & Recovery Component for Alpine
+Alpine.data('formDraft', (storageKey, options = {}) => ({
+    storageKey: storageKey,
+    hasDraft: false,
+    savedAt: '',
+    saveStatus: 'idle', // 'idle' | 'saving' | 'saved'
+    saveTimeout: null,
+    statusTimeout: null,
+    toastMessage: '',
+
+    init() {
+        this.checkExistingDraft();
+
+        // Listen for input/change on form to auto-save with debounce
+        this.$el.addEventListener('input', () => this.debouncedSave());
+        this.$el.addEventListener('change', () => this.debouncedSave());
+
+        // On form submit, clear draft so next load won't show stale draft
+        this.$el.addEventListener('submit', () => {
+            this.clearDraft();
+        });
+    },
+
+    checkExistingDraft() {
+        try {
+            const raw = localStorage.getItem(this.storageKey);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            if (parsed && parsed.data && Object.keys(parsed.data).length > 0) {
+                // Ensure at least one non-empty value
+                const hasValue = Object.values(parsed.data).some(v => v !== '' && v !== null && v !== false && (Array.isArray(v) ? v.length > 0 : true));
+                if (hasValue) {
+                    this.hasDraft = true;
+                    this.savedAt = parsed.savedAt || 'beberapa saat lalu';
+                }
+            }
+        } catch (e) {
+            console.error('Error reading form draft:', e);
+        }
+    },
+
+    debouncedSave() {
+        this.saveStatus = 'saving';
+        clearTimeout(this.saveTimeout);
+        this.saveTimeout = setTimeout(() => {
+            this.saveDraft();
+        }, 600);
+    },
+
+    saveDraft() {
+        try {
+            const data = {};
+            const elements = this.$el.querySelectorAll('input, select, textarea');
+
+            elements.forEach(el => {
+                const name = el.name || el.id;
+                if (!name) return;
+
+                // Skip CSRF, method, and password fields for security
+                if (name === '_token' || name === '_method' || el.type === 'password') {
+                    return;
+                }
+
+                if (el.type === 'checkbox') {
+                    data[name] = el.checked;
+                } else if (el.type === 'radio') {
+                    if (el.checked) {
+                        data[name] = el.value;
+                    }
+                } else if (name === 'genres[]') {
+                    if (!data['genres']) data['genres'] = [];
+                    data['genres'].push(el.value);
+                } else {
+                    data[name] = el.value;
+                }
+            });
+
+            // Also capture poster preview src if present
+            const posterPreview = document.getElementById('poster_preview');
+            if (posterPreview && posterPreview.src && !posterPreview.classList.contains('hidden')) {
+                data['_poster_src'] = posterPreview.src;
+            }
+
+            // Only save if meaningful data is entered
+            const keys = Object.keys(data);
+            const hasMeaningfulData = keys.some(k => {
+                const val = data[k];
+                return val !== '' && val !== null && val !== false && (Array.isArray(val) ? val.length > 0 : true);
+            });
+
+            if (hasMeaningfulData) {
+                const now = new Date();
+                const savedAt = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                localStorage.setItem(this.storageKey, JSON.stringify({
+                    data,
+                    savedAt,
+                    timestamp: now.getTime()
+                }));
+                this.hasDraft = true;
+                this.savedAt = savedAt;
+                this.saveStatus = 'saved';
+            } else {
+                this.saveStatus = 'idle';
+            }
+
+            clearTimeout(this.statusTimeout);
+            this.statusTimeout = setTimeout(() => {
+                this.saveStatus = 'idle';
+            }, 2500);
+        } catch (e) {
+            console.error('Error saving form draft:', e);
+            this.saveStatus = 'idle';
+        }
+    },
+
+    restoreDraft() {
+        try {
+            const raw = localStorage.getItem(this.storageKey);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            if (!parsed || !parsed.data) return;
+
+            const data = parsed.data;
+
+            // Restore elements
+            Object.keys(data).forEach(key => {
+                const val = data[key];
+
+                // Handle star ratings
+                if (['rating_overall', 'rating_story', 'rating_acting', 'rating_visual', 'rating_audio'].includes(key)) {
+                    window.dispatchEvent(new CustomEvent('set-rating', {
+                        detail: { name: key, value: parseFloat(val) || 0 }
+                    }));
+                }
+
+                // Handle genres array
+                if (key === 'genres' && Array.isArray(val)) {
+                    const genreContainer = document.getElementById('genre_container');
+                    if (genreContainer) {
+                        genreContainer.innerHTML = '';
+                        val.forEach(g => {
+                            const badge = document.createElement('span');
+                            badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded text-xs font-mono font-bold';
+                            badge.innerHTML = `${g} <input type="hidden" name="genres[]" value="${g}">`;
+                            genreContainer.appendChild(badge);
+                        });
+                    }
+                    return;
+                }
+
+                // Handle poster preview
+                if (key === '_poster_src' && val) {
+                    const posterPreview = document.getElementById('poster_preview');
+                    if (posterPreview) {
+                        posterPreview.src = val;
+                        posterPreview.classList.remove('hidden');
+                    }
+                    return;
+                }
+
+                // Find element by name or id
+                const el = this.$el.querySelector(`[name="${key}"]`) || document.getElementById(key);
+                if (el) {
+                    if (el.type === 'checkbox') {
+                        el.checked = Boolean(val);
+                    } else if (el.type === 'radio') {
+                        const radio = this.$el.querySelector(`[name="${key}"][value="${val}"]`);
+                        if (radio) radio.checked = true;
+                    } else {
+                        el.value = val;
+                    }
+                    // Trigger events for any reactive bindings
+                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+
+            // If poster_url is filled, update poster preview
+            if (data['poster_url']) {
+                const posterPreview = document.getElementById('poster_preview');
+                if (posterPreview) {
+                    posterPreview.src = data['poster_url'];
+                    posterPreview.classList.remove('hidden');
+                }
+            }
+
+            this.toastMessage = 'Draf berhasil dipulihkan!';
+            setTimeout(() => {
+                this.toastMessage = '';
+            }, 4000);
+        } catch (e) {
+            console.error('Error restoring form draft:', e);
+            alert('Gagal memulihkan draf.');
+        }
+    },
+
+    clearDraft() {
+        try {
+            localStorage.removeItem(this.storageKey);
+            this.hasDraft = false;
+            this.savedAt = '';
+            this.saveStatus = 'idle';
+        } catch (e) {
+            console.error('Error clearing form draft:', e);
+        }
+    },
+
+    discardDraft() {
+        if (confirm('Apakah Anda yakin ingin membuang draf tersimpan di browser ini?')) {
+            this.clearDraft();
+            this.toastMessage = 'Draf telah dihapus.';
+            setTimeout(() => {
+                this.toastMessage = '';
+            }, 3000);
+        }
     }
 }));
 

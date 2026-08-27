@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\MovieSeries;
 use App\Models\Review;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class ReviewDetailController extends Controller
 {
@@ -19,7 +18,7 @@ class ReviewDetailController extends Controller
 
         $review = $movie->reviews()->where('is_published', true)->latest()->first();
 
-        if (!$review && !auth()->check()) {
+        if (! $review && ! auth()->check()) {
             abort(404);
         }
 

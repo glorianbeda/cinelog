@@ -12,6 +12,7 @@ class SettingsController extends Controller
     public function index()
     {
         $user = auth()->user();
+
         return view('admin.settings.index', compact('user'));
     }
 
@@ -21,8 +22,8 @@ class SettingsController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:50', 'alpha_dash', 'unique:users,username,' . $user->id],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'username' => ['required', 'string', 'max:50', 'alpha_dash', 'unique:users,username,'.$user->id],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
             'bio' => ['nullable', 'string', 'max:1000'],
             'avatar_url' => ['nullable', 'string', 'max:500'],
             'tmdb_api_key' => ['nullable', 'string', 'max:255'],

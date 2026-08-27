@@ -6,7 +6,6 @@ use App\Models\Genre;
 use App\Models\MovieSeries;
 use App\Models\Review;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class StatsController extends Controller
@@ -16,11 +15,11 @@ class StatsController extends Controller
         $owner = User::getOwner();
 
         $totalReviews = Review::where('is_published', true)->count();
-        $totalMovies = MovieSeries::where('type', 'movie')->whereHas('reviews', fn($q) => $q->where('is_published', true))->count();
-        $totalSeries = MovieSeries::whereIn('type', ['series', 'anime'])->whereHas('reviews', fn($q) => $q->where('is_published', true))->count();
+        $totalMovies = MovieSeries::where('type', 'movie')->whereHas('reviews', fn ($q) => $q->where('is_published', true))->count();
+        $totalSeries = MovieSeries::whereIn('type', ['series', 'anime'])->whereHas('reviews', fn ($q) => $q->where('is_published', true))->count();
         $avgRating = Review::where('is_published', true)->avg('rating_overall') ?? 0;
-        
-        $totalRuntimeMinutes = MovieSeries::whereHas('reviews', fn($q) => $q->where('is_published', true))->sum('runtime_minutes') ?? 0;
+
+        $totalRuntimeMinutes = MovieSeries::whereHas('reviews', fn ($q) => $q->where('is_published', true))->sum('runtime_minutes') ?? 0;
         $totalRuntimeHours = round($totalRuntimeMinutes / 60);
 
         // Rating distribution (0.5 to 5.0)
@@ -34,7 +33,7 @@ class StatsController extends Controller
 
         // Top Genres
         $topGenres = Genre::withCount(['moviesSeries' => function ($q) {
-            $q->whereHas('reviews', fn($r) => $r->where('is_published', true));
+            $q->whereHas('reviews', fn ($r) => $r->where('is_published', true));
         }])->orderByDesc('movies_series_count')->take(10)->get();
 
         // Monthly breakdown for current year
@@ -50,7 +49,7 @@ class StatsController extends Controller
         }
 
         // Top Directors
-        $topDirectors = MovieSeries::whereHas('reviews', fn($q) => $q->where('is_published', true))
+        $topDirectors = MovieSeries::whereHas('reviews', fn ($q) => $q->where('is_published', true))
             ->whereNotNull('director')
             ->select('director', DB::raw('count(*) as total_count'))
             ->groupBy('director')
