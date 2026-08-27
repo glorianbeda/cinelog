@@ -170,6 +170,7 @@
                                    required 
                                    class="w-full neo-input px-3.5 py-2 rounded-lg text-sm font-sans font-bold">
                         </div>
+                        </div>
 
                     <!-- Type, Year, Director, Duration & Series Details -->
                     <div x-data="{
