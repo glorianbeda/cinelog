@@ -16,7 +16,7 @@ class HomeController extends Controller
 
         $featuredMasterpieces = Review::with(['movieSeries.genres', 'user'])
             ->where('is_published', true)
-            ->where('rating_overall', '>=', 4.5)
+            ->where('rating_overall', '>=', 8.5)
             ->latest('watched_date')
             ->take(4)
             ->get();

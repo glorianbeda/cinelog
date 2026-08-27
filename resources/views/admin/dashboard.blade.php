@@ -47,7 +47,7 @@
                 <x-lucide-star class="w-4 h-4 fill-purple-400" />
             </div>
             <div class="text-2xl sm:text-3xl font-black font-mono text-white">{{ number_format($avgRating, 1) }} ★</div>
-            <span class="text-[11px] text-zinc-400 font-mono">Skala penilaian 5.0</span>
+            <span class="text-[11px] text-zinc-400 font-mono">Skala penilaian 10.0</span>
         </div>
 
         <div class="bg-[#161622] border-2 border-slate-700 p-4 sm:p-5 rounded-xl shadow-[4px_4px_0px_0px_#06B6D4]">

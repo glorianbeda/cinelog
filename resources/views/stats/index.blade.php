@@ -51,7 +51,7 @@
                 <x-lucide-star class="w-5 h-5 fill-purple-400" />
             </div>
             <div class="text-3xl sm:text-4xl font-black font-mono text-white">
-                {{ number_format($avgRating, 1) }} <span class="text-sm text-zinc-400">/ 5.0</span>
+                {{ number_format($avgRating, 1) }} <span class="text-sm text-zinc-400">/ 10.0</span>
             </div>
             <span class="text-xs text-zinc-400 font-mono block">Skor bintang rata-rata</span>
         </div>

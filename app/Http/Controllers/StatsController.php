@@ -22,12 +22,21 @@ class StatsController extends Controller
         $totalRuntimeMinutes = MovieSeries::whereHas('reviews', fn ($q) => $q->where('is_published', true))->sum('runtime_minutes') ?? 0;
         $totalRuntimeHours = round($totalRuntimeMinutes / 60);
 
-        // Rating distribution (0.5 to 5.0)
+        // Rating distribution (1.0 to 10.0 points)
         $ratingDistribution = [];
-        for ($i = 5.0; $i >= 1.0; $i -= 0.5) {
-            $key = number_format($i, 1);
+        for ($i = 10; $i >= 1; $i--) {
+            $key = number_format($i, 0);
             $ratingDistribution[$key] = Review::where('is_published', true)
-                ->where('rating_overall', $i)
+                ->where(function ($q) use ($i) {
+                    if ($i === 10) {
+                        $q->where('rating_overall', '>=', 9.5);
+                    } elseif ($i === 1) {
+                        $q->where('rating_overall', '<', 1.5);
+                    } else {
+                        $q->where('rating_overall', '>=', $i - 0.49)
+                            ->where('rating_overall', '<', $i + 0.5);
+                    }
+                })
                 ->count();
         }
 

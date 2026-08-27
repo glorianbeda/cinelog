@@ -58,40 +58,48 @@ class Review extends Model
     {
         $rating = $this->rating_overall;
 
-        if ($rating >= 4.8) {
+        if ($rating >= 9.5) {
             return [
-                'label' => 'Masterpiece',
-                'badge_class' => 'bg-yellow-400 text-black border-2 border-white/40 shadow-[2px_2px_0px_#A855F7]',
-                'stars' => 5.0,
+                'label' => 'Masterpiece / Mahakarya',
+                'badge_class' => 'bg-yellow-400 text-black border-2 border-white/40 shadow-[2px_2px_0px_#A855F7] animate-pulse',
+                'stars' => 10.0,
             ];
         }
 
-        if ($rating >= 4.0) {
+        if ($rating >= 8.5) {
             return [
-                'label' => 'Great / Recommended',
+                'label' => 'Great / High Praise',
                 'badge_class' => 'bg-cyan-400 text-black border-2 border-white/40 shadow-[2px_2px_0px_#fff]',
+                'stars' => $rating,
+            ];
+        }
+
+        if ($rating >= 7.0) {
+            return [
+                'label' => 'Good / Recommended',
+                'badge_class' => 'bg-emerald-400 text-black border-2 border-white/40 shadow-[2px_2px_0px_#fff]',
+                'stars' => $rating,
+            ];
+        }
+
+        if ($rating >= 5.0) {
+            return [
+                'label' => 'Decent / Mediocre',
+                'badge_class' => 'bg-amber-400 text-black border-2 border-white/40 shadow-[2px_2px_0px_#fff]',
                 'stars' => $rating,
             ];
         }
 
         if ($rating >= 3.0) {
             return [
-                'label' => 'Good / Worth Watching',
-                'badge_class' => 'bg-emerald-400 text-black border-2 border-white/40 shadow-[2px_2px_0px_#fff]',
-                'stars' => $rating,
-            ];
-        }
-
-        if ($rating >= 2.0) {
-            return [
-                'label' => 'Mediocre / Decent',
-                'badge_class' => 'bg-amber-400 text-black border-2 border-white/40 shadow-[2px_2px_0px_#fff]',
+                'label' => 'Bad / Disappointing',
+                'badge_class' => 'bg-orange-500 text-black border-2 border-white/40 shadow-[2px_2px_0px_#fff]',
                 'stars' => $rating,
             ];
         }
 
         return [
-            'label' => 'Terrible / Disappointing',
+            'label' => 'Terrible / Unwatchable',
             'badge_class' => 'bg-rose-500 text-white border-2 border-white/40 shadow-[2px_2px_0px_#fff]',
             'stars' => $rating,
         ];

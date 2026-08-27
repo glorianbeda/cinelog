@@ -8,10 +8,10 @@
 
 @php
     $starSizeClass = match($size) {
-        'sm' => 'w-5 h-5',
-        'md' => 'w-7 h-7',
-        'lg' => 'w-9 h-9',
-        default => 'w-9 h-9'
+        'sm' => 'w-4 h-4',
+        'md' => 'w-5 h-5 sm:w-6 sm:h-6',
+        'lg' => 'w-5 h-5 sm:w-7 sm:h-7',
+        default => 'w-5 h-5 sm:w-7 sm:h-7'
     };
 @endphp
 
@@ -30,10 +30,10 @@
 
     <input type="hidden" name="{{ $name }}" :value="rating">
 
-    <div class="flex items-center gap-1.5 p-3 bg-zinc-900/80 border-2 border-zinc-700/80 rounded-lg select-none">
-        <div class="flex items-center gap-1" @mouseleave="clearHover()">
-            @for ($i = 1; $i <= 5; $i++)
-                <div class="relative cursor-pointer transition-transform duration-150 hover:scale-115"
+    <div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 p-3 bg-zinc-900/80 border-2 border-zinc-700/80 rounded-lg select-none">
+        <div class="flex items-center gap-0.5 sm:gap-1 overflow-x-auto py-1" @mouseleave="clearHover()">
+            @for ($i = 1; $i <= 10; $i++)
+                <div class="relative cursor-pointer transition-transform duration-150 hover:scale-115 shrink-0"
                      :class="{ 'animate-pop': isPopping && (rating >= {{ $i }} - 0.5) }">
                     
                     <!-- Left Half Hitbox (0.5) -->
@@ -82,8 +82,8 @@
         </div>
 
         <!-- Numeric Display & Reset Button -->
-        <div class="ml-auto flex items-center gap-2">
-            <span class="font-mono text-sm font-bold text-amber-400 bg-black/40 px-2 py-0.5 rounded border border-amber-500/20" 
+        <div class="ml-auto flex items-center gap-2 shrink-0">
+            <span class="font-mono text-sm font-bold text-amber-400 bg-black/40 px-2.5 py-0.5 rounded border border-amber-500/20" 
                   x-text="(currentDisplayRating).toFixed(1) + ' ★'">
             </span>
             <button type="button" 

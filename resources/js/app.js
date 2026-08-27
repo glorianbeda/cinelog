@@ -26,22 +26,22 @@ Alpine.data('starRating', (initialValue = 0, inputName = 'rating_overall') => ({
     get ratingLabel() {
         const r = this.currentDisplayRating;
         if (r === 0) return 'Pilih Rating';
-        if (r <= 1.0) return '💀 Unwatchable / Terrible';
-        if (r <= 2.0) return '👎 Bad / Disappointing';
-        if (r <= 3.0) return '😐 Decent / Mediocre';
-        if (r <= 4.0) return '👍 Good / Recommended';
-        if (r <= 4.5) return '🔥 Great / High Praise';
+        if (r <= 2.0) return '💀 Unwatchable / Terrible';
+        if (r <= 4.0) return '👎 Bad / Disappointing';
+        if (r <= 6.0) return '😐 Decent / Mediocre';
+        if (r <= 8.0) return '👍 Good / Recommended';
+        if (r <= 9.0) return '🔥 Great / High Praise';
         return '🏆 Masterpiece / Mahakarya';
     },
 
     get badgeColorClass() {
         const r = this.currentDisplayRating;
         if (r === 0) return 'bg-zinc-800 text-zinc-400 border-zinc-700';
-        if (r <= 1.0) return 'bg-rose-500 text-white border-white/30 shadow-[2px_2px_0px_#fff]';
-        if (r <= 2.0) return 'bg-orange-500 text-black border-white/30 shadow-[2px_2px_0px_#fff]';
-        if (r <= 3.0) return 'bg-amber-400 text-black border-white/30 shadow-[2px_2px_0px_#fff]';
-        if (r <= 4.0) return 'bg-emerald-400 text-black border-white/30 shadow-[2px_2px_0px_#fff]';
-        if (r <= 4.5) return 'bg-cyan-400 text-black border-white/30 shadow-[2px_2px_0px_#fff]';
+        if (r <= 2.0) return 'bg-rose-500 text-white border-white/30 shadow-[2px_2px_0px_#fff]';
+        if (r <= 4.0) return 'bg-orange-500 text-black border-white/30 shadow-[2px_2px_0px_#fff]';
+        if (r <= 6.0) return 'bg-amber-400 text-black border-white/30 shadow-[2px_2px_0px_#fff]';
+        if (r <= 8.0) return 'bg-emerald-400 text-black border-white/30 shadow-[2px_2px_0px_#fff]';
+        if (r <= 9.0) return 'bg-cyan-400 text-black border-white/30 shadow-[2px_2px_0px_#fff]';
         return 'bg-yellow-400 text-black border-white/40 shadow-[2px_2px_0px_#A855F7] animate-pulse';
     },
 

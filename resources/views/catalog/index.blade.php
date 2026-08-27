@@ -99,10 +99,10 @@
                 <label class="block text-zinc-400 font-bold mb-1">Minimum Rating</label>
                 <select name="min_rating" onchange="this.form.submit()" class="w-full neo-input px-2.5 py-1.5 rounded-lg text-xs">
                     <option value="">Semua Rating</option>
-                    <option value="4.5" {{ request('min_rating') == '4.5' ? 'selected' : '' }}>★★★★½ 4.5+ (Masterpiece)</option>
-                    <option value="4.0" {{ request('min_rating') == '4.0' ? 'selected' : '' }}>★★★★☆ 4.0+ (Great)</option>
-                    <option value="3.0" {{ request('min_rating') == '3.0' ? 'selected' : '' }}>★★★☆☆ 3.0+ (Good)</option>
-                    <option value="2.0" {{ request('min_rating') == '2.0' ? 'selected' : '' }}>★★☆☆☆ 2.0+ (Decent)</option>
+                    <option value="9.0" {{ request('min_rating') == '9.0' ? 'selected' : '' }}>★ 9.0+ (Masterpiece)</option>
+                    <option value="8.0" {{ request('min_rating') == '8.0' ? 'selected' : '' }}>★ 8.0+ (Great)</option>
+                    <option value="7.0" {{ request('min_rating') == '7.0' ? 'selected' : '' }}>★ 7.0+ (Good)</option>
+                    <option value="5.0" {{ request('min_rating') == '5.0' ? 'selected' : '' }}>★ 5.0+ (Decent)</option>
                 </select>
             </div>
 

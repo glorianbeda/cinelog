@@ -164,7 +164,7 @@
                                 </span>
                                 <div class="space-y-1">
                                     <x-star-rating-display :rating="$review->rating_overall" size="lg" :showScore="false" />
-                                    <span class="text-xs font-mono text-zinc-400 block">dari skala 5.0 bintang</span>
+                                    <span class="text-xs font-mono text-zinc-400 block">dari skala 10.0 bintang</span>
                                 </div>
                             </div>
                         </div>

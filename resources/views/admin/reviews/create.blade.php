@@ -357,7 +357,7 @@
             <!-- 1. Overall Rating Component -->
             <x-star-rating-input 
                 name="rating_overall" 
-                :value="old('rating_overall', 4.5)" 
+                :value="old('rating_overall', 8.5)" 
                 label="Rating Utama (Keseluruhan)" 
                 size="lg" 
                 :required="true" />

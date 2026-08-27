@@ -65,7 +65,7 @@
                             <span class="text-xs font-mono font-bold uppercase">Rata-Rata</span>
                         </div>
                         <div class="text-2xl sm:text-3xl font-black font-mono text-white">
-                            {{ number_format($avgRating, 1) }} <span class="text-sm text-zinc-400">/ 5.0</span>
+                            {{ number_format($avgRating, 1) }} <span class="text-sm text-zinc-400">/ 10.0</span>
                         </div>
                         <span class="text-[11px] text-zinc-400 font-mono">Skor Personal</span>
                     </div>
@@ -86,7 +86,7 @@
         </div>
     </section>
 
-    <!-- SECTION: Masterpieces Showcase (Rating >= 4.5 Stars) -->
+    <!-- SECTION: Masterpieces Showcase (Rating >= 8.5 Stars) -->
     @if($featuredMasterpieces->isNotEmpty())
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <div class="flex items-center justify-between border-b-2 border-slate-800 pb-4">
@@ -99,12 +99,12 @@
                             MASTERPIECES <span class="text-amber-400">SELECTION</span>
                         </h2>
                         <p class="text-xs text-zinc-400 font-mono">
-                            Film & Series dengan nilai tertinggi (4.5 - 5.0 ★)
+                            Film & Series dengan nilai tertinggi (8.5 - 10.0 ★)
                         </p>
                     </div>
                 </div>
 
-                <a href="{{ route('catalog.index', ['min_rating' => 4.5]) }}" 
+                <a href="{{ route('catalog.index', ['min_rating' => 8.5]) }}" 
                    class="hidden sm:inline-flex items-center gap-1 text-xs font-mono font-bold text-amber-400 hover:text-amber-300">
                     <span>Lihat Semua Masterpiece</span>
                     <x-lucide-arrow-right class="w-4 h-4" />
