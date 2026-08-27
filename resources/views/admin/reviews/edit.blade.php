@@ -210,6 +210,7 @@
                             </div>
 
                             <div>
+                            <div x-show="isSeries">
                                 <label for="input_total_seasons" class="block font-bold text-zinc-400 mb-1">
                                     Total Season
                                 </label>
@@ -219,11 +220,14 @@
                                        x-model="seasons"
                                        class="w-full neo-input px-3 py-2 rounded-lg text-xs">
                                 <span class="text-[10px] text-zinc-400 mt-1 block" x-show="isSeries">Jumlah season tontonan</span>
+                                <span class="text-[10px] text-zinc-400 mt-1 block">Jumlah season tontonan</span>
                             </div>
 
                             <div>
+                            <div x-show="isSeries">
                                 <label for="input_total_episodes" class="block font-bold text-zinc-200 mb-1">
                                     Total Episode <span x-show="isSeries" class="text-amber-400 font-normal text-[10px]">(ke jam)</span>
+                                    Total Episode <span class="text-amber-400 font-normal text-[10px]">(ke jam)</span>
                                 </label>
                                 <input type="number" 
                                        id="input_total_episodes" 
@@ -231,6 +235,7 @@
                                        x-model="episodes"
                                        class="w-full neo-input px-3 py-2 rounded-lg text-xs">
                                 <span class="text-[10px] text-zinc-400 mt-1 block" x-show="isSeries">Total episode yang ditonton</span>
+                                <span class="text-[10px] text-zinc-400 mt-1 block">Total episode yang ditonton</span>
                             </div>
 
                             <!-- Live Calculation Helper -->
