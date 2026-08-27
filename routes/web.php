@@ -27,6 +27,11 @@ Route::middleware(['prevent.duplicate.setup'])->group(function () {
     Route::post('/setup-owner', [SetupOwnerController::class, 'store'])->name('setup.store');
 });
 
+Route::get('/setup-storage', function () {
+    \Illuminate\Support\Facades\Artisan::call('storage:link');
+    return 'Storage berhasil di-link!';
+});
+
 // Authentication
 Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('login.post');
