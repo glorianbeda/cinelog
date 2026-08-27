@@ -1,0 +1,121 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Space Mono', monospace;
+    --color-dark-bg: #0D0D12;
+    --color-dark-surface: #171720;
+    --color-dark-card: #1F1F2C;
+    --color-dark-border: #333345;
+    --color-neon-amber: #F59E0B;
+    --color-neon-purple: #A855F7;
+    --color-neon-cyan: #06B6D4;
+    --color-neon-emerald: #10B981;
+    --color-neon-rose: #F43F5E;
+}
+
+@layer base {
+    body {
+        background-color: #0D0D12;
+        color: #F3F4F6;
+        font-family: var(--font-sans);
+        overflow-x: hidden;
+    }
+
+    /* Custom Dark Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #0D0D12;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #2D2D3D;
+        border-radius: 4px;
+        border: 1px solid #44445A;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #A855F7;
+    }
+}
+
+/* Neubrutalism Dark Theme Utility Classes */
+.neo-card {
+    background-color: #171720;
+    border: 2px solid #333345;
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.8);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neo-card-purple {
+    background-color: #171720;
+    border: 2px solid #333345;
+    box-shadow: 4px 4px 0px 0px #A855F7;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neo-card-amber {
+    background-color: #171720;
+    border: 2px solid #333345;
+    box-shadow: 4px 4px 0px 0px #F59E0B;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neo-card-cyan {
+    background-color: #171720;
+    border: 2px solid #333345;
+    box-shadow: 4px 4px 0px 0px #06B6D4;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neo-card-hover:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px 0px #A855F7;
+    border-color: #555570;
+}
+
+.neo-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    border: 2px solid #1E1E2A;
+    transition: all 0.1s ease-in-out;
+}
+
+.neo-btn:hover {
+    transform: translate(-2px, -2px);
+}
+
+.neo-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px 0px transparent !important;
+}
+
+.neo-input {
+    background-color: #12121A;
+    border: 2px solid #333345;
+    color: #F9FAFB;
+    transition: all 0.15s ease-in-out;
+}
+
+.neo-input:focus {
+    outline: none;
+    border-color: #A855F7;
+    box-shadow: 3px 3px 0px 0px #A855F7;
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+
+.animate-pop {
+    animation: pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
